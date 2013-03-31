@@ -1,3 +1,12 @@
 Watterott - Uhr 5x,- & Launchpad 4,70
 formica - mini roboter (schwarm)
 Vorhängeschloß (29c3)
+
+Compilieren: s. Makefile
+	Endlosschleifen mit volatile zv.
+
+Programmieren:
+$ mspdebug rf2500
+(mspdebug) prog <code>
+(mspdebug) run
+
