@@ -23,7 +23,7 @@ int main(void) {
 
 	c = 0;
 	while (1) {
-		// sync: 1 clk green, red off
+		// sync: 2 SLEEP green, red off
 		P1OUT |=  LED2;
 		P1OUT &= ~LED1;
 		for (i=0; i<2*SLEEP; i++);
