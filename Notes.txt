@@ -10,3 +10,8 @@ $ mspdebug rf2500
 (mspdebug) prog <code>
 (mspdebug) run
 
+URLs:
+http://homepages.ius.edu/rwisman/C335/html/Syllabus.htm
+http://processors.wiki.ti.com/index.php/MSP430_LaunchPad_Installation_Guide
+http://processors.wiki.ti.com/index.php/Getting_Started_with_the_MSP430_LaunchPad_Workshop
+https://github.com/Salz/msp430-primary
