@@ -21,7 +21,7 @@ int main(void) {
 	P1IE  |=  BTN;	// Generate interrupt
 	P1IFG &= ~BTN;	// Clear Interrupt
 
-	_BIS_SR(LPM3_bits + GIE); // Enable low power (1uA) and interrupts
+	_BIS_SR(LPM4_bits + GIE); // Enable low power (1uA) and interrupts
 
 	for(;;);
 }
