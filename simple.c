@@ -3,29 +3,33 @@
 #include <msp430.h>
 #include <legacymsp430.h>
 
+#define LED1 (1<<0)
+#define LED2 (1<<6)
+
+#define BTN  (1<<3)
 int main(void) {
 	volatile int c, i;
 
 	WDTCTL = WDTPW + WDTHOLD; // Stop watchdoc timer
-	P1DIR |= 1<<0; // Set P1.0 (red LED) to output
-	P1OUT &= ~(1<<0); // Turn LED off
+	P1DIR |=  LED1; // Set P1.0 (red LED) to output
+	P1OUT &= ~LED1; // Turn LED off
 
-	P1DIR |= 1<<6; // Set P1.6 (green LED) to output
-	P1OUT &= ~(1<<6); // Turn LED off
+	P1DIR |=  LED2; // Set P1.6 (green LED) to output
+	P1OUT &= ~LED2; // Turn LED off
 
-	P1REN |=  1<<3; // Enable pull-up resistor
-	P1DIR &= ~(1<<3); // Set P1.3 (left switch) to input
-	P1SEL |=  1<<3; // Select push button
+	P1REN |=  BTN; // Enable pull-up resistor
+	P1DIR &= ~BTN; // Set P1.3 (left switch) to input
+	P1SEL |=  BTN; // Select push button
 
 	c = 0;
 	while (1) {
 		// Toggle green LED
 		if (c%5 == 0) {
-			P1OUT ^= 1<<6; // Toggle P1.6
+			P1OUT ^= LED2; // Toggle P1.6
 		}
 		// Toggle red LED if switch pressed
-		if ((P1IN & 1<<3) == 0) {
-			P1OUT ^= 1<<0;
+		if ((P1IN & BTN) == 0) {
+			P1OUT ^= LED1;
 		}
 		// Delay
 		for (i = 0, c++; i < c; i++);

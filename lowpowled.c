@@ -6,7 +6,7 @@
 #define LED1 (1<<0)
 #define LED2 (1<<6)
 
-#define BTN (1<<3)
+#define BTN  (1<<3)
 
 int main(void) {
 	WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer

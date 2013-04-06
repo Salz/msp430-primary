@@ -11,7 +11,7 @@
 #define LED1 (1<<0)
 #define LED2 (1<<6)
 
-#define BTN (1<<3)
+#define BTN  (1<<3)
 
 volatile unsigned int count;
 
