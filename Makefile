@@ -6,4 +6,4 @@ BINARIES=simple binout pushcount lowpowled bad_recursion
 all: $(BINARIES)
 
 clean:
-	rm $(BINARIES)
+	-rm -f $(BINARIES)
