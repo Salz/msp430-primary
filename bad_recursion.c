@@ -6,7 +6,7 @@ void blink();
 int main() {
 	WDTCTL = WDTPW | WDTHOLD;
 
-	P1OUT &= ~LED1
+	P1OUT &= ~LED1;
 	P1DIR |= LED1;
 
 	blink();
