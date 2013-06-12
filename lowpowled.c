@@ -9,6 +9,7 @@
 #define BTN  (1<<3)
 
 int main(void) {
+	volatile unsigned i;
 	WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
 
 	P1DIR |=  LED1; // Set P1.0 (red LED) to output
@@ -26,13 +27,21 @@ int main(void) {
 
 	_BIS_SR(LPM4_bits + GIE); // Enable low power (1uA) and interrupts
 
-	for(;;);
+	// never reached
+	for(;;) {
+		P1OUT |= LED2;
+		for (i = 0; i < 50000; i++);
+		P1OUT &= ~LED2;
+		for (i = 0; i < 50000; i++);
+	}
 }
 
 #pragma vector=PORT1_VECTOR
 __interrupt void toggle(void) {
 	static int state = 0;
+	volatile unsigned i;
 
+	P1IE  &= ~BTN;	// Disable IRQ to avoid bouncing
 	P1IFG &= ~BTN;	// Clear Interrupt
 
 	state++;
@@ -53,4 +62,13 @@ __interrupt void toggle(void) {
 			P1OUT ^= (LED1|LED2);
 			break;
 	}
+
+	// Quick'n'dirty
+	for (i = 0; i < 35000; i++);
+	P1IE  |=  BTN;	// Re-enable interrupt
+	P1IFG &= ~BTN;	// Clear Interrupt
+
+	// TODO: better: disable irq and enable after timeout
+
 }
+
