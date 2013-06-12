@@ -11,6 +11,7 @@
 static int last_btn_state;
 
 inline void set_btn_irq_state(void) {
+	last_btn_state = ((P1IN & BTN) == 0);
 	if (last_btn_state) {
 		// button pressed
 		// wait for rising edge
@@ -50,7 +51,6 @@ int main(void) {
 	P1IE  |=  BTN;	// Generate interrupt
 	P1IFG &= ~BTN;	// Clear Interrupt
 
-	last_btn_state = ((P1IN & BTN) == 0);
 	set_btn_irq_state();
 
 	_BIS_SR(LPM0_bits + GIE); // Enable low power (1uA) and interrupts
@@ -104,7 +104,6 @@ __interrupt void toggle(void) {
 #pragma vector=WDT_VECTOR
  __interrupt void debounce_tmout(void) {
 	// after ~32ms, reenable button
-	last_btn_state = ((P1IN & BTN) == 0);
 	set_btn_irq_state();
 	stop_timer();
 
