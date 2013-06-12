@@ -8,9 +8,34 @@
 
 #define BTN  (1<<3)
 
+static int last_btn_state;
+
+inline void set_btn_irq_state(void) {
+	if (last_btn_state) {
+		// button pressed
+		// wait for rising edge
+		P1IES &= ~BTN;
+	} else {
+		// button released
+		// wait for falling edge
+		P1IES |= BTN;
+	}
+}
+
+inline void stop_timer(void) {
+	WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
+	IE1 &= ~WDTIE;		// Reset WD IRQ
+}
+
+inline void start_timer(void) {
+	WDTCTL = WDT_MDLY_32;	// Watchdog timer interval ~32ms
+	IE1 |= WDTIE;		// Enable WD interrupt
+}
+
 int main(void) {
 	volatile unsigned i;
 	WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
+	stop_timer();
 
 	P1DIR |=  LED1; // Set P1.0 (red LED) to output
 	P1OUT &= ~LED1; // Turn LED off
@@ -25,7 +50,10 @@ int main(void) {
 	P1IE  |=  BTN;	// Generate interrupt
 	P1IFG &= ~BTN;	// Clear Interrupt
 
-	_BIS_SR(LPM4_bits + GIE); // Enable low power (1uA) and interrupts
+	last_btn_state = ((P1IN & BTN) == 0);
+	set_btn_irq_state();
+
+	_BIS_SR(LPM0_bits + GIE); // Enable low power (1uA) and interrupts
 
 	// never reached
 	for(;;) {
@@ -36,13 +64,8 @@ int main(void) {
 	}
 }
 
-#pragma vector=PORT1_VECTOR
-__interrupt void toggle(void) {
+inline void change_led_state(void) {
 	static int state = 0;
-	volatile unsigned i;
-
-	P1IE  &= ~BTN;	// Disable IRQ to avoid bouncing
-	P1IFG &= ~BTN;	// Clear Interrupt
 
 	state++;
 	// switch statement instructions simplified
@@ -62,13 +85,30 @@ __interrupt void toggle(void) {
 			P1OUT ^= (LED1|LED2);
 			break;
 	}
+}
 
-	// Quick'n'dirty
-	for (i = 0; i < 35000; i++);
-	P1IE  |=  BTN;	// Re-enable interrupt
+#pragma vector=PORT1_VECTOR
+__interrupt void toggle(void) {
+	P1IE  &= ~BTN;	// Disable IRQ to avoid bouncing
 	P1IFG &= ~BTN;	// Clear Interrupt
 
-	// TODO: better: disable irq and enable after timeout
+	// only toggle if button wasn't pressed
+	if (!last_btn_state) {
+		change_led_state();
+	}
 
+	// disable irq and enable after timeout
+	start_timer();
+
+}
+#pragma vector=WDT_VECTOR
+ __interrupt void debounce_tmout(void) {
+	// after ~32ms, reenable button
+	last_btn_state = ((P1IN & BTN) == 0);
+	set_btn_irq_state();
+	stop_timer();
+
+	P1IE  |=  BTN;	// Re-enable interrupt
+	P1IFG &= ~BTN;	// Clear Interrupt
 }
 
