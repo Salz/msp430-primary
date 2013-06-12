@@ -53,7 +53,8 @@ int main(void) {
 
 	set_btn_irq_state();
 
-	_BIS_SR(LPM0_bits + GIE); // Enable low power (1uA) and interrupts
+	//_BIS_SR(LPM4_bits + GIE); // Enable low power (1uA) and interrupts
+	_BIS_SR(LPM1_bits + GIE); // wd timer needs this to work
 
 	// never reached
 	for(;;) {
@@ -101,6 +102,7 @@ __interrupt void toggle(void) {
 	start_timer();
 
 }
+
 #pragma vector=WDT_VECTOR
  __interrupt void debounce_tmout(void) {
 	// after ~32ms, reenable button
